@@ -26,7 +26,7 @@ def json_serial(obj):
 
 
 # using username and password    
-g = Github("Rasmi20", "Rojaqayyum31")
+g = Github("8b91eea04795d900f0f2d55c04c5e973723373c1")
 
 for repo in g.get_user().get_repos():
     print(repo.name)
@@ -36,6 +36,7 @@ for repo in g.get_user().get_repos():
 
 
 repo = g.get_repo("Hygieia/Hygieia")
+"""
 tags = repo.get_tags()
 for tag in tags[:10]:
     print('tag',tag)
@@ -46,23 +47,30 @@ for label in labels[:10]:
 
 #List Branched for specific repo
 print(list(repo.get_branches()[:10]))
-
+"""
 #get Issues
-
+"""
 issues = repo.get_issues(state='all')
 count=0
 issue_store = []
-for issue in issues[:2800]:
+Body_length=0
+for issue in issues[201:400]:
     count = count + 1
     issues_json=[]
 #    print('issue body',issue.body)
 #    print('issue No. of comments',issue.comments)
 #    print('Comments',issue.get_comments())
-    comments = issue.get_comments()
+    comments = issiue.get_comments()
     issue_comment_list = []
     Comments_body=""
     issues_json.append(issue_comment_list)
-    issues_json.append(issue.body)
+    BodyLength=len(issue.body)
+    if BodyLength > 32000:
+           IssueBody=issue.body
+           IssueBody=IssueBody[:32000]
+           issues_json.append(IssueBody)
+    else:
+           issues_json.append(issue.body)
     issues_json.append(issue.id)
     issues_json.append(issue.number)
     issues_json.append(issue.title)
@@ -86,6 +94,9 @@ for issue in issues[:2800]:
            #issue_comment['commented_by'] = comment.user.login
            #issue_comment_list.append(json.dumps(issue_comment))
            #issue_comment_list.append(issue_comment)
+           Body_length=len(Comments_body)
+           if(Body_length > 32000):
+              break
        issues_json.append(Comments_body)
     else:
        print("lesser than 5")
@@ -98,15 +109,18 @@ for issue in issues[:2800]:
            #issue_comment['commented_by'] = comment.user.login
            #issue_comment_list.append(json.dumps(issue_comment))
            #issue_comment_list.append(issue_comment)
+           Body_length=len(Comments_body)
+           if(Body_length > 32000):
+              break
        issues_json.append(Comments_body)     
     
        
-    with open('issuelist.csv', 'a') as csvFile:
+    with open('HygieiaIssues.csv', 'a') as csvFile:
        writer = csv.writer(csvFile)
        writer.writerow(issues_json)
 print(count)
     #print('issues_json' , issues_json)
-
+"""
 """
     print('issue_comment',issue_comment)
         
@@ -118,6 +132,7 @@ print(count)
     print('issue updated at',issue.updated_at)
     print('issue state', issue.state)
     
+"""
 """
 pull_store = []
 
@@ -173,7 +188,7 @@ for pull in pulls[:200]:
         json.dump(pull_store, outfile,default=json_serial)
     
     #print('pull comment',pull_comment)
-"""    
+
     commits = pull.get_commits()
     for commit in commits[:2]:
         print('pull commit', commit)
@@ -182,20 +197,27 @@ for pull in pulls[:200]:
         
     #print('Pull get Commits ',pull.get_commits())
     #print('Pull get Issue Commits', pull.get_commits().totalCount)
-
 """
 
-"""
+
 #List overall commits for repo and Files for specific commits
-print('commits')
 commits = repo.get_commits()
-for commit in commits[:10]:
-    print(commit)
-    print(commit.files)
-    print('etag ',commit.etag)
-    print('comments ' , commit.get_comments())
-
-
+print(type(commits))
+print(len(list(commits)))
+for commit in commits[2001:2501]:
+    Commits=[]
+    FileName=""
+    Commits.append(commit.sha)
+    Commits.append(commit.commit.author.name)
+    Commits.append(commit.commit.committer.name)
+    Files= commit.files
+    for i in Files:
+        FileName = FileName + i.raw_url + '\n'
+    Commits.append(FileName)
+    with open('CommitInfo6.csv', 'a') as csvFile:
+       writer = csv.writer(csvFile)
+       writer.writerow(Commits)
+"""
 #List comments  for repo    
 comments = repo.get_comments()
 for comment in comments:
